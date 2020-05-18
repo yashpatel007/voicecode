@@ -3,6 +3,10 @@ import speech_recognition as sr
 import pyautogui
 import pyaudio
 
+
+pypath = "./codesnippets/python/"
+
+
 languages = ["C++", "Python", "Java", "HTML"]
 
 
@@ -18,7 +22,7 @@ def readAndPrint(filename):
     try:
         f = open(filename, 'r')
         lines = f.readlines()
-        s = [(i+"\n") for i in lines]
+        s = [(i) for i in lines]
         print("executing")
         return "".join(s)
     except FileNotFoundError:
@@ -40,7 +44,9 @@ pydict = CallableDict({"hello world": "print('Hello World!')\n",
                        "try": "try:\n#some code \n\bexcept:\n#handle exception \n",
                        "switch": "def switch(i):\nswitcher={ 0: \n,1: \n,2: \n \breturn switcher.get(i,'Invalid')\n",
                        "import collections": "import collections",
-                       "make heap": readAndPrint("./codesnippets/python/heap.txt")
+                       "make heap": "heap.txt",
+                       "quicksort": "quicksort.txt",
+                       "bubble sort": "bubblesort.txt"
                        })
 cppdict = {
     "initialize": "#include<iostream>\n#include<stdlib.h>\nint main( ){ \n cout<< 'hello world';\n",
@@ -71,7 +77,12 @@ def processtext(voice, language):
     if(language == "Python"):
         for cmd in voice:
             if(cmd in pydict):
-                pyautogui.typewrite(pydict.get(cmd))
+                result = pydict.get(cmd)
+                if(result.endswith(".txt")):
+                    result = readAndPrint(pypath+result)
+                pyperclip.copy(result)
+                pyperclip.paste()
+                # pyautogui.write(result)
                 break
 
     if(language == "C++"):
