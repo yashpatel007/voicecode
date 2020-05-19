@@ -5,13 +5,13 @@ import pyaudio
 import sys
 import threading
 
-from PyQt5.QtWidgets import QApplication, QLabel, QPushButton, QHBoxLayout, QWidget, QComboBox, QVBoxLayout, QTextEdit
-
+from PyQt5.QtWidgets import QApplication, QLabel, QPushButton, QHBoxLayout, QWidget, QComboBox, QVBoxLayout, QTextEdit, QSystemTrayIcon,QMenu,QAction
+from PyQt5.QtGui import QIcon
 
 pypath = "./codesnippets/python/"
 pydict = {"hello world": "print('Hello World!')\n",
           "for loop": "for i in range(10):\ncontinue\n",
-          "while loop": "i=0\nwhile(i<10):\nbreak\n",
+          "while loop": "i=0\nwhile(i<10): \nbreak\n",
           "dictionary": "dictionary = dict()\n",
           "set": "s = set()\n",
           "empty list": "li = []",
@@ -167,6 +167,9 @@ if __name__ == "__main__":
 
     def startvoicetype():
         startbtn.setEnabled(False)
+        micoption.setEnabled(False)
+        langoption.setEnabled(False)
+        action1.setEnabled(False)
         # print("starting")
         vc.play = True
         vc.initMic(int(micoption.currentIndex()))
@@ -186,35 +189,84 @@ if __name__ == "__main__":
 
     def stopvoicetype():
         startbtn.setEnabled(True)
+        micoption.setEnabled(True)
+        langoption.setEnabled(True)
+        action1.setEnabled(True)
         msg.setText("")
         print("stopping")
         print(threading.enumerate())
         vc.play = False
+    
+    def trayclicked():
+        if(window.isVisible()):
+            window.hide()
+        else:
+            window.show()
 
     app = QApplication(sys.argv)
+    app.setQuitOnLastWindowClosed(False)
+
     window = QWidget()
     window.setWindowTitle('VoiceCode')
+    
     layout = QHBoxLayout()
-
+    
     micoption = QComboBox()
     micoption.addItems(vc.microphones)
+    micoption.setFixedWidth(200)
 
     langoption = QComboBox()
     langoption.addItems(["Python", "Java", "C++", "HTML"])
-
+    langoption.setFixedWidth(100)
+    
     startbtn = QPushButton('play')
     startbtn.clicked.connect(startvoicetype)  # Connect clicked to greeting()
+    startbtn.setFixedWidth(80)
+
     stopbtn = QPushButton('stop')
     stopbtn.clicked.connect(stopvoicetype)
+    stopbtn.setFixedWidth(80)
+
+    msg = QLabel('')
+    msg.setStyleSheet("border-style:outset;border-width: 2px;border-radius: 200px;border-color: black;")
+
+
+
     layout.addWidget(langoption)
     layout.addWidget(micoption)
     layout.addWidget(startbtn)
     layout.addWidget(stopbtn)
-    msg = QLabel('')
-    msg.setStyleSheet("QLabel#msg {color: red}")
     layout.addWidget(msg)
+    
     window.setLayout(layout)
-
+    window.setFixedSize(800,50)
+    window.setWindowIcon(QIcon("appicon.png"))
     window.show()
+
+    # Create the tray
+    tray = QSystemTrayIcon()
+    tray.setIcon(QIcon("appicon.png"))
+    tray.setVisible(True)
+
+
+
+    # Create the menu
+    menu = QMenu()
+    action1 = QAction("start")
+    action1.triggered.connect(startvoicetype)
+    menu.addAction(action1)
+
+    action2 = QAction("stop")
+    action2.triggered.connect(stopvoicetype)
+    menu.addAction(action2)
+
+
+    quit = QAction("Quit")
+    quit.triggered.connect(app.quit)
+    menu.addAction(quit)
+
+    # Add the menu to the tray
+    tray.setContextMenu(menu)
+    tray.activated.connect(trayclicked)
 
     sys.exit(app.exec_())
