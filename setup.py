@@ -7,13 +7,13 @@ Usage:
 
 from setuptools import setup
 
-APP = ['voicecode.py']
-DATA_FILES = []
+APP = ['voicetype.py']
+DATA_FILES = ["codesnippets"]
 OPTIONS = {
     'iconfile': 'applogo.icns',
     'argv_emulation': True,
     'packages': ['pyaudio', 'speech_recognition', 'pyperclip', 'pyautogui'],
-    'includes': ['pyaudio', 'speech_recognition', 'pyperclip', 'pyautogui']
+    'includes': ['pyaudio', 'speech_recognition', 'pyperclip', 'pyautogui', 'PyQt5', 'image']
 }
 
 setup(
